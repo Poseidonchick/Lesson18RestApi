@@ -1,5 +1,7 @@
 package shopTests;
 
+import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeAll;
@@ -7,10 +9,12 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Cookie;
 
 import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.value;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 import static com.codeborne.selenide.WebDriverRunner.getWebDriver;
 import static io.qameta.allure.Allure.step;
+import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.core.Is.is;
 
@@ -20,6 +24,7 @@ public class ShopTests {
     @BeforeAll
     static void prepare() {
         RestAssured.baseURI = "http://demowebshop.tricentis.com/";
+         Configuration.baseUrl = "http://demowebshop.tricentis.com";
     }
 
     @Test
@@ -45,7 +50,6 @@ public class ShopTests {
     @Test
     void checkUsersAddress() {
         String loginPassword = "poseidon@sea.com";
-        SelenideElement address = $(".address-list");
 
         step("Забираем куки и вставляем в браузер", () -> {
             String authorizationCookie = given()
@@ -64,7 +68,7 @@ public class ShopTests {
                     .cookie("NOPCOMMERCE.AUTH");
 
             step("Открываем браузер с самой легковесной страницей сайта", () ->
-                    open("Themes/DefaultClean/Content/images/logo.png"));
+                    open("/Themes/DefaultClean/Content/images/logo.png"));
 
             step("Вставляем куки в браузер", () ->
                     getWebDriver().manage().addCookie(
@@ -72,9 +76,9 @@ public class ShopTests {
         });
         step("Проверяем данные пользователя", () -> {
             open("/customer/info");
-            $("#FirstName").shouldHave(text(loginPassword));
-            $("#LastName").shouldHave(text(loginPassword));
-            $("#Email").shouldHave(text(loginPassword));
+            $("#FirstName").shouldHave(value(loginPassword));
+            $("#LastName").shouldHave(value(loginPassword));
+            $("#Email").shouldHave(value(loginPassword));
         });
     }
 }
